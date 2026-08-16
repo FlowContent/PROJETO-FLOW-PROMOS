@@ -654,15 +654,27 @@ document.querySelectorAll('.link-card').forEach(card => {
   var cards = document.querySelectorAll('.link-card[data-grupo]');
   if (!cards.length || typeof fbq !== 'function') return;
 
+  function dispararLead(el) {
+    // Guarda anti-duplicidade: pointerdown e click acontecem no mesmo toque.
+    var agora = Date.now();
+    if (el.__leadTs && agora - el.__leadTs < 2000) return;
+    el.__leadTs = agora;
+
+    // eventID permite deduplicar com a API de Conversões (CAPI) no futuro
+    var eventId = 'lead-' + agora + '-' + Math.random().toString(36).slice(2, 10);
+    fbq('track', 'Lead', {
+      content_name: el.dataset.grupo,
+      content_category: el.dataset.nicho
+    }, { eventID: eventId });
+  }
+
   cards.forEach(function (el) {
-    el.addEventListener('click', function () {
-      // eventID permite deduplicar com a API de Conversões (CAPI) no futuro
-      var eventId = 'lead-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
-      fbq('track', 'Lead', {
-        content_name: el.dataset.grupo,
-        content_category: el.dataset.nicho
-      }, { eventID: eventId });
-    });
+    // No celular, tocar no link abre o app do WhatsApp e a página vai para
+    // segundo plano na hora — requisições em voo podem ser descartadas.
+    // pointerdown dispara ~100-300ms antes disso, dando tempo do pixel sair.
+    el.addEventListener('pointerdown', function () { dispararLead(el); });
+    // Fallback: navegadores sem Pointer Events e ativação por teclado (Enter).
+    el.addEventListener('click', function () { dispararLead(el); });
   });
 })();
 </script>
