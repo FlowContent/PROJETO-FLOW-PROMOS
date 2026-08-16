@@ -654,26 +654,59 @@ document.querySelectorAll('.link-card').forEach(card => {
   var cards = document.querySelectorAll('.link-card[data-grupo]');
   if (!cards.length || typeof fbq !== 'function') return;
 
+  function lerCookie(nome) {
+    var m = document.cookie.match('(^|;)\\s*' + nome + '\\s*=\\s*([^;]+)');
+    return m ? decodeURIComponent(m[2]) : undefined;
+  }
+
   function dispararLead(el) {
-    // Guarda anti-duplicidade: pointerdown e click acontecem no mesmo toque.
+    // Guarda anti-duplicidade contra cliques repetidos no mesmo botão.
     var agora = Date.now();
     if (el.__leadTs && agora - el.__leadTs < 2000) return;
     el.__leadTs = agora;
 
-    // eventID permite deduplicar com a API de Conversões (CAPI) no futuro
+    // Um único event_id para os dois caminhos: a Meta deduplica e conta uma vez.
     var eventId = 'lead-' + agora + '-' + Math.random().toString(36).slice(2, 10);
-    fbq('track', 'Lead', {
-      content_name: el.dataset.grupo,
-      content_category: el.dataset.nicho
-    }, { eventID: eventId });
+    var grupo = el.dataset.grupo;
+    var nicho = el.dataset.nicho;
+
+    // Caminho 1 — pixel do navegador.
+    fbq('track', 'Lead', { content_name: grupo, content_category: nicho }, { eventID: eventId });
+
+    // Caminho 2 — API de Conversões, via nosso servidor.
+    // sendBeacon é feito para sobreviver ao instante em que a página é
+    // abandonada (a troca para o app do WhatsApp). É o que garante a entrega.
+    var corpo = JSON.stringify({
+      event_id: eventId,
+      content_name: grupo,
+      content_category: nicho,
+      event_source_url: location.href,
+      fbp: lerCookie('_fbp'),
+      fbc: lerCookie('_fbc')
+    });
+
+    var enviado = false;
+    if (navigator.sendBeacon) {
+      try {
+        enviado = navigator.sendBeacon('/api/lead', new Blob([corpo], { type: 'application/json' }));
+      } catch (e) { enviado = false; }
+    }
+    if (!enviado && window.fetch) {
+      try {
+        fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: corpo,
+          keepalive: true
+        }).catch(function () {});
+      } catch (e) {}
+    }
   }
 
+  // Dispara no click (e não no pointerdown): com o sendBeacon garantindo a
+  // entrega, não é mais preciso antecipar o disparo — e assim um toque que
+  // vira rolagem de tela não conta lead falso.
   cards.forEach(function (el) {
-    // No celular, tocar no link abre o app do WhatsApp e a página vai para
-    // segundo plano na hora — requisições em voo podem ser descartadas.
-    // pointerdown dispara ~100-300ms antes disso, dando tempo do pixel sair.
-    el.addEventListener('pointerdown', function () { dispararLead(el); });
-    // Fallback: navegadores sem Pointer Events e ativação por teclado (Enter).
     el.addEventListener('click', function () { dispararLead(el); });
   });
 })();
