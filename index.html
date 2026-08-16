@@ -659,6 +659,19 @@ document.querySelectorAll('.link-card').forEach(card => {
     return m ? decodeURIComponent(m[2]) : undefined;
   }
 
+  // O _fbc guarda o clique que trouxe a pessoa do anúncio. Se ela clicar
+  // rápido demais, o pixel ainda não gravou o cookie — aí reconstruímos a
+  // partir do fbclid da URL, no mesmo formato que a Meta usa.
+  function obterFbc() {
+    var cookie = lerCookie('_fbc');
+    if (cookie) return cookie;
+    try {
+      var fbclid = new URLSearchParams(location.search).get('fbclid');
+      if (fbclid) return 'fb.1.' + Date.now() + '.' + fbclid;
+    } catch (e) {}
+    return undefined;
+  }
+
   function dispararLead(el) {
     // Guarda anti-duplicidade contra cliques repetidos no mesmo botão.
     var agora = Date.now();
@@ -682,7 +695,7 @@ document.querySelectorAll('.link-card').forEach(card => {
       content_category: nicho,
       event_source_url: location.href,
       fbp: lerCookie('_fbp'),
-      fbc: lerCookie('_fbc')
+      fbc: obterFbc()
     });
 
     var enviado = false;
