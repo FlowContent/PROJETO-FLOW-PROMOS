@@ -567,11 +567,11 @@ footer {
       <span class="link-card__label">FLOW ODONTO (Grupo de Odontologia)</span>
       <span class="link-card__arrow">→</span>
     </a>
-    <a href="https://chat.whatsapp.com/FMWk8upealq90j7CInY6au" class="link-card" target="_blank" rel="noopener" data-grupo="FLOW MAMAES" data-nicho="maternidade">
+    <a href="https://chat.whatsapp.com/FMWk8upealq90j7CInY6au" class="link-card" target="_blank" rel="noopener" data-grupo="FLOW BARBER" data-nicho="barbearia">
       <span class="link-card__icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9"/><path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1"/></svg>
       </span>
-      <span class="link-card__label">FLOW MAMÃES (Grupo de Maternidade)</span>
+      <span class="link-card__label">FLOW BARBER (Grupo de barbeiro)</span>
       <span class="link-card__arrow">→</span>
     </a>
   </section>
@@ -597,19 +597,35 @@ footer {
 
 <script>
 // ---- REVEAL ON SCROLL ----
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry, i) => {
-    if (entry.isIntersecting) {
-      // Stagger siblings
-      const siblings = [...entry.target.parentElement.querySelectorAll('[data-reveal]')];
-      const idx = siblings.indexOf(entry.target);
-      setTimeout(() => entry.target.classList.add('visible'), idx * 80);
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.1 });
+// REDE DE SEGURANCA: [data-reveal] nasce com opacity:0 e so fica visivel quando
+// o observer adiciona .visible. Se o IntersectionObserver faltar ou este trecho
+// lancar, a pagina inteira — inclusive os 4 botoes — some e ninguem clica em
+// nada. Por isso TODA a montagem do observer fica dentro do try, e ha um
+// temporizador que revela o conteudo de qualquer jeito.
+function revelarTudo() {
+  document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('visible'));
+}
 
-document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+try {
+  if (typeof IntersectionObserver !== 'function') throw new Error('sem IntersectionObserver');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        // Stagger siblings
+        const siblings = [...entry.target.parentElement.querySelectorAll('[data-reveal]')];
+        const idx = siblings.indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('visible'), idx * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+  setTimeout(revelarTudo, 3000);
+} catch (e) {
+  revelarTudo();
+}
 
 // ---- RIPPLE on primary buttons ----
 document.querySelectorAll('.btn--primary').forEach(btn => {
@@ -652,11 +668,29 @@ document.querySelectorAll('.link-card').forEach(card => {
 <script>
 (function () {
   var cards = document.querySelectorAll('.link-card[data-grupo]');
-  if (!cards.length || typeof fbq !== 'function') return;
+  if (!cards.length) return;
 
+  // O pixel é OPCIONAL aqui. Se ele estiver bloqueado, a API de Conversões
+  // continua sendo enviada — é justamente o caminho que precisa sobreviver.
+  var temPixel = (typeof fbq === 'function');
+
+  // Congelado no carregamento: se a pessoa clicar em dois grupos, o _fbc
+  // reconstruído tem que ser o MESMO nos dois envios, senão vira ruído.
+  var TS_ENTRADA = Date.now();
+  var PARAMS = (function () {
+    try { return new URLSearchParams(location.search); } catch (e) { return null; }
+  })();
+
+  // decodeURIComponent lança em qualquer cookie com "%" solto. Sem o try, um
+  // cookie ruim mataria o envio inteiro.
   function lerCookie(nome) {
     var m = document.cookie.match('(^|;)\\s*' + nome + '\\s*=\\s*([^;]+)');
-    return m ? decodeURIComponent(m[2]) : undefined;
+    if (!m) return undefined;
+    try { return decodeURIComponent(m[2]); } catch (e) { return m[2]; }
+  }
+
+  function obterFbclid() {
+    return (PARAMS && PARAMS.get('fbclid')) || undefined;
   }
 
   // O _fbc guarda o clique que trouxe a pessoa do anúncio. Se ela clicar
@@ -665,53 +699,89 @@ document.querySelectorAll('.link-card').forEach(card => {
   function obterFbc() {
     var cookie = lerCookie('_fbc');
     if (cookie) return cookie;
-    try {
-      var fbclid = new URLSearchParams(location.search).get('fbclid');
-      if (fbclid) return 'fb.1.' + Date.now() + '.' + fbclid;
-    } catch (e) {}
-    return undefined;
+    var fbclid = obterFbclid();
+    return fbclid ? 'fb.1.' + TS_ENTRADA + '.' + fbclid : undefined;
+  }
+
+  // Trava por grupo, na sessão. A página NÃO é descarregada (os links abrem em
+  // aba nova), então a pessoa volta do WhatsApp com ela ainda viva e é comum
+  // tocar de novo no mesmo botão. Sem isto, cada retorno conta um lead novo.
+  function jaContou(grupo) {
+    try { return sessionStorage.getItem('flow_lead_' + grupo) === '1'; }
+    catch (e) { return false; }
+  }
+  function marcarContado(grupo) {
+    try { sessionStorage.setItem('flow_lead_' + grupo, '1'); } catch (e) {}
   }
 
   function dispararLead(el) {
-    // Guarda anti-duplicidade contra cliques repetidos no mesmo botão.
+    var grupo = el.dataset.grupo;
+    var nicho = el.dataset.nicho;
+    if (!grupo) return;
+
+    // Guarda curta contra toque duplo acidental no mesmo botão.
     var agora = Date.now();
     if (el.__leadTs && agora - el.__leadTs < 2000) return;
     el.__leadTs = agora;
 
+    // Trava de sessão: um lead por grupo, por visita.
+    if (jaContou(grupo)) return;
+    marcarContado(grupo);
+
     // Um único event_id para os dois caminhos: a Meta deduplica e conta uma vez.
-    var eventId = 'lead-' + agora + '-' + Math.random().toString(36).slice(2, 10);
-    var grupo = el.dataset.grupo;
-    var nicho = el.dataset.nicho;
+    // O sufixo é preenchido para nunca ficar curto demais e ser recusado.
+    var sufixo = (Math.random().toString(36) + '00000000').slice(2, 10);
+    var eventId = 'lead-' + agora + '-' + sufixo;
 
-    // Caminho 1 — pixel do navegador.
-    fbq('track', 'Lead', { content_name: grupo, content_category: nicho }, { eventID: eventId });
-
-    // Caminho 2 — API de Conversões, via nosso servidor.
-    // sendBeacon é feito para sobreviver ao instante em que a página é
-    // abandonada (a troca para o app do WhatsApp). É o que garante a entrega.
     var corpo = JSON.stringify({
       event_id: eventId,
+      event_time: Math.floor(agora / 1000),
       content_name: grupo,
       content_category: nicho,
       event_source_url: location.href,
       fbp: lerCookie('_fbp'),
-      fbc: obterFbc()
+      fbc: obterFbc(),
+      fbclid: obterFbclid()
     });
 
-    var enviado = false;
-    if (navigator.sendBeacon) {
-      try {
-        enviado = navigator.sendBeacon('/api/lead', new Blob([corpo], { type: 'application/json' }));
-      } catch (e) { enviado = false; }
-    }
-    if (!enviado && window.fetch) {
-      try {
+    // Caminho 1 — API de Conversões, PRIMEIRO. É o que precisa sobreviver a
+    // bloqueador, a erro de JS e à troca para o app do WhatsApp.
+    //
+    // O sendBeacon pode devolver false em navegador embutido (Instagram,
+    // Facebook) e MESMO ASSIM entregar. Se a gente disparasse o fetch nesse
+    // caso, o servidor receberia o mesmo clique duas vezes. Por isso: quando
+    // o sendBeacon existe, ele é o único caminho. O fetch só entra quando o
+    // navegador não tem sendBeacon nenhum.
+    try {
+      if (navigator.sendBeacon) {
+        try {
+          navigator.sendBeacon('/api/lead', new Blob([corpo], { type: 'application/json' }));
+        } catch (e) {
+          if (window.fetch) {
+            fetch('/api/lead', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: corpo,
+              keepalive: true
+            }).catch(function () {});
+          }
+        }
+      } else if (window.fetch) {
         fetch('/api/lead', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: corpo,
           keepalive: true
         }).catch(function () {});
+      }
+    } catch (e) {}
+
+    // Caminho 2 — pixel do navegador, isolado para não derrubar o de cima.
+    if (temPixel) {
+      try {
+        fbq('track', 'Lead',
+          { content_name: grupo, content_category: nicho },
+          { eventID: eventId });
       } catch (e) {}
     }
   }
@@ -719,8 +789,16 @@ document.querySelectorAll('.link-card').forEach(card => {
   // Dispara no click (e não no pointerdown): com o sendBeacon garantindo a
   // entrega, não é mais preciso antecipar o disparo — e assim um toque que
   // vira rolagem de tela não conta lead falso.
+  // O auxclick cobre o clique com o botão do meio, que não gera click.
   cards.forEach(function (el) {
-    el.addEventListener('click', function () { dispararLead(el); });
+    el.addEventListener('click', function (e) {
+      if (e.isTrusted === false) return;
+      dispararLead(el);
+    });
+    el.addEventListener('auxclick', function (e) {
+      if (e.isTrusted === false || e.button !== 1) return;
+      dispararLead(el);
+    });
   });
 })();
 </script>
