@@ -16,7 +16,7 @@ const PIXEL_PADRAO = '1338420338279998';
 // paginas ja abertas no navegador de quem esta no site AGORA ainda mandam o
 // nome antigo. Sem isso, esses cliques tomariam 400 e o lead seria perdido.
 // Pode ser removido depois de alguns dias.
-const GRUPOS_VALIDOS = ['FLOW FIT', 'FLOW CUIUDOS', 'FLOW ODONTO', 'FLOW BARBER', 'FLOW MAMAES'];
+const GRUPOS_VALIDOS = ['A FLOW FIT', 'FLOW FIT', 'FLOW CUIUDOS', 'FLOW ODONTO', 'FLOW BARBER', 'FLOW MAMAES'];
 
 const ORIGENS_PADRAO = [
   'https://flowcontentpromos.shop',
