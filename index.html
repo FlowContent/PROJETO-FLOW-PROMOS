@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Flow Content — As melhores promoções fitness estão só aqui. Entre no grupo FLOW FIT.">
-  <meta name="theme-color" content="#FFFFFF">
+  <meta name="theme-color" content="#0A222B">
   <meta property="og:title" content="Flow Content Promos — FLOW FIT">
   <meta property="og:description" content="As melhores promoções fitness estão só aqui. Entre no grupo FLOW FIT.">
   <title>Flow Content Promo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Playfair+Display:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Unbounded:wght@700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" sizes="any">
 
 <!-- Meta Pixel Code -->
 <script>
@@ -34,514 +34,332 @@ src="https://www.facebook.com/tr?id=1338420338279998&ev=PageView&noscript=1"
 <style>
 /* ============================================================
    FLOW CONTENT PROMOS — Landing FLOW FIT
-   Layout inspirado no modelo de referência (7651435.jpg).
-   Onde o modelo usa amarelo, aqui entra a cor da marca.
+   Painel escuro à esquerda (borda ondulada) e
+   foto recortada com contorno amarelo à direita.
    ============================================================ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --c-brand:    #0A222B;   /* cor da marca (substitui o amarelo do modelo) */
-  --c-brand-h:  #163B4A;   /* hover */
-  --c-bg:       #FFFFFF;
-  --c-ice:      #F7F7F7;
-  --c-ink:      #0A222B;
-  --c-muted:    #3E4E55;
-  --c-line:     rgba(10,34,43,0.85);
-  --font: 'Nunito', system-ui, sans-serif;
-  --font-classic: 'Playfair Display', Georgia, 'Times New Roman', serif;  /* fonte clássica do título FLOW FIT */
+  --c-brand:  #0A222B;   /* painel, textos escuros */
+  --c-yellow: #FFD62E;   /* destaques, contorno da foto, halteres */
+  --c-paper:  #EDEDEF;   /* fundo do lado direito */
+  --c-white:  #FFFFFF;
+
+  --f-display: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
+  --f-label:   'Unbounded', 'Arial Black', system-ui, sans-serif;
+  --f-body:    'DM Sans', system-ui, sans-serif;
+
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  /* respiro lateral: cresce com a tela, sem deixar "bordas" vazias */
-  --gutter: clamp(16px, 6vw, 140px);
+  --pad: clamp(16px, 5vw, 80px);
+  --wave: 14px;          /* raio das "bolinhas" da borda ondulada */
 }
 
-html { font-size: 16px; }
-
 body {
-  font-family: var(--font);
-  background: var(--c-bg);
-  color: var(--c-ink);
+  font-family: var(--f-body);
+  background: var(--c-paper);
+  color: var(--c-brand);
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a { color: inherit; text-decoration: none; }
 
+/* ====================================================
+   LAYOUT: dois painéis lado a lado
+   ==================================================== */
 .page {
-  position: relative;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+  display: grid;
+  grid-template-columns: 56fr 44fr;
+  position: relative;
   overflow: hidden;
 }
 
-/* ====================================================
-   TOPO (nav do modelo)
-   ==================================================== */
-.top {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  padding: clamp(20px, 4vw, 40px) var(--gutter) 0;
-  border-bottom: 2px solid var(--c-brand);
-  position: relative;
-  z-index: 2;
-}
-
-.top__home {
-  font-weight: 900;
-  font-size: 0.95rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 0 14px 12px;
-  position: relative;
-}
-.top__home::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: -5px;
-  height: 6px;
-  background: var(--c-brand);
-}
-
-.top__nav {
-  display: flex;
-  gap: clamp(16px, 4vw, 56px);
-  padding-bottom: 12px;
-}
-.top__nav a {
-  font-size: 0.95rem;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--c-ink);
-  transition: opacity 0.2s var(--ease);
-}
-.top__nav a:hover { opacity: 0.6; }
-
-/* ====================================================
-   HERO
-   ==================================================== */
-.hero {
-  flex: 1;
-  display: grid;
-  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
-  align-items: center;
-  align-content: center;
-  gap: clamp(24px, 5vw, 72px);
-  padding: clamp(40px, 6vw, 80px) var(--gutter) clamp(90px, 9vw, 130px);
-  position: relative;
-  z-index: 1;
-}
-
-.hero__text {
+/* ---------- PAINEL ESQUERDO ---------- */
+.panel {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  padding: clamp(20px, 3vw, 36px) var(--pad) clamp(40px, 5vw, 64px);
+  background: var(--c-brand);
+  color: var(--c-white);
 }
 
-/* Ícones em quadradinhos (amarelo -> marca) */
-.icons {
+/* borda ondulada (bolinhas da cor do painel invadindo o lado claro) */
+.panel::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  right: calc(var(--wave) * -1);
+  width: var(--wave);
+  background: radial-gradient(circle at 0 50%, var(--c-brand) calc(var(--wave) - 0.5px), transparent var(--wave));
+  background-size: var(--wave) calc(var(--wave) * 2);
+}
+
+/* ---------- MENU ---------- */
+.nav {
   display: flex;
-  gap: 10px;
-  margin-bottom: 22px;
+  flex-wrap: wrap;
+  gap: 6px clamp(16px, 2.4vw, 32px);
+  font-weight: 500;
 }
-.icons span {
-  width: 52px; height: 52px;
-  border-radius: 16px;
-  background: var(--c-brand);
-  color: var(--c-ice);
-  display: flex; align-items: center; justify-content: center;
+.nav a { transition: color 0.2s var(--ease); }
+.nav a:hover, .nav a[aria-current] { color: var(--c-yellow); }
+
+/* ---------- CONTEÚDO (centralizado) ---------- */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(40px, 6vw, 80px) 0 clamp(24px, 3vw, 40px);
 }
-.icons svg { width: 28px; height: 28px; }
 
 .title {
-  font-family: var(--font-classic);
+  font-family: var(--f-display);
   font-weight: 400;
-  font-size: clamp(3.4rem, 9vw, 6.6rem);
-  line-height: 0.95;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: clamp(2.5rem, 6.4vw, 5.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
 }
+.title em { font-style: normal; color: var(--c-yellow); }
 
-.title-fit {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 6px;
-  font-family: var(--font-classic);
+.subtitle {
+  margin-top: clamp(32px, 4vw, 52px);
+  font-family: var(--f-label);
   font-weight: 900;
-  font-size: clamp(2.6rem, 6.5vw, 4.8rem);
-  line-height: 1;
-  letter-spacing: 0.06em;
-}
-.title-fit svg {
-  height: 0.9em;
-  width: auto;
-  flex-shrink: 0;
+  font-size: clamp(0.82rem, 1.1vw, 1rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--c-yellow);
 }
 
 .desc {
-  max-width: 400px;
-  margin: 26px 0 30px;
-  font-size: clamp(1rem, 1.6vw, 1.15rem);
-  line-height: 1.5;
-  color: var(--c-muted);
+  max-width: 40ch;
+  margin: 10px 0 22px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.86);
 }
-.desc strong { color: var(--c-ink); font-weight: 800; }
 
-/* ---- BOTÃO ÚNICO ---- */
+/* ---------- BOTÃO DO GRUPO ---------- */
 .cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  min-height: 72px;
-  min-width: min(100%, 380px);
-  padding: 20px 52px;
-  border-radius: 14px;
-  background: var(--c-brand);
-  color: var(--c-ice);
-  font-family: var(--font);
-  font-size: 1.25rem;
+  gap: 10px;
+  min-width: 360px;
+  min-height: 58px;
+  padding: 16px 48px;
+  border-radius: 999px;
+  background: var(--c-white);
+  color: var(--c-brand);
+  font-family: var(--f-label);
   font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  box-shadow: 0 8px 24px rgba(10,34,43,0.22);
-  transition: transform 0.22s var(--ease), background 0.22s var(--ease), box-shadow 0.22s var(--ease);
+  white-space: nowrap;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+  touch-action: manipulation;
+  transition: transform 0.2s var(--ease), background-color 0.2s var(--ease);
 }
-.cta svg { width: 26px; height: 26px; flex-shrink: 0; }
-.cta:hover {
-  transform: translateY(-2px);
-  background: var(--c-brand-h);
-  box-shadow: 0 14px 34px rgba(10,34,43,0.3);
-}
-.cta:active { transform: translateY(0); }
-.cta:focus-visible { outline: 3px solid var(--c-brand); outline-offset: 4px; }
+.cta svg { width: 20px; height: 20px; flex-shrink: 0; }
+.cta:hover { transform: translateY(-2px); background: var(--c-yellow); }
+.cta:active { transform: none; }
+.cta:focus-visible { outline: 3px solid var(--c-yellow); outline-offset: 3px; }
 
-/* ====================================================
-   FOTO EM TELA CHEIA À DIREITA, com degradê vindo da esquerda
-   ==================================================== */
-.visual {
+/* ---------- PAINEL DIREITO ---------- */
+.side {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  padding: clamp(20px, 3vw, 36px) var(--pad) 0 calc(var(--pad) * 0.6 + var(--wave));
+}
+
+.photo {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-top: clamp(90px, 10vw, 140px);
+}
+
+/* contorno amarelo recortado (fica atrás da foto) */
+.photo__frame {
+  position: relative;
+  width: min(100%, 520px);
+  aspect-ratio: 5 / 6;
+}
+.photo__frame::before {
+  content: '';
   position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: 58%;
-  z-index: 0;
+  inset: -16px;
+  background: var(--c-yellow);
+  clip-path: polygon(14% 4%, 34% 0%, 58% 6%, 82% 1%, 100% 18%, 95% 40%, 100% 62%, 94% 84%, 100% 100%, 0% 100%, 5% 78%, 0% 56%, 7% 34%, 1% 16%);
 }
-
-.visual__photo {
+.photo__frame img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 75% 30%;
-  display: block;
+  object-position: 50% 35%;
+  filter: grayscale(1) contrast(1.08);
+  clip-path: polygon(16% 7%, 35% 3%, 57% 9%, 80% 4%, 96% 20%, 92% 41%, 97% 62%, 91% 84%, 96% 100%, 4% 100%, 8% 78%, 3% 56%, 10% 34%, 4% 18%);
+  transition: filter 0.5s var(--ease);
+}
+@media (hover: hover) {
+  .photo__frame:hover img { filter: none; }
 }
 
-/* Degradê: branco na esquerda que vai sumindo até mostrar a foto */
-.visual::after {
-  content: "";
+/* etiqueta amarela inclinada */
+.tag {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg,
-    #FFFFFF 0%,
-    rgba(255,255,255,0.92) 8%,
-    rgba(255,255,255,0.6) 18%,
-    rgba(255,255,255,0.2) 30%,
-    rgba(255,255,255,0) 42%);
-  pointer-events: none;
-}
-
-/* Selo (o "20% OFF" amarelo do modelo) */
-.badge {
-  position: absolute;
-  z-index: 1;
-  left: 20%;
-  bottom: 9%;
-  width: clamp(130px, 11vw, 190px);
-  aspect-ratio: 1;
+  left: calc(var(--wave) * -1 - 70px);
+  bottom: 12%;
+  z-index: 3;
+  padding: 12px 28px;
   border-radius: 50%;
-  background: var(--c-brand);
-  color: var(--c-ice);
-  border: 6px solid var(--c-bg);
-  box-shadow: 0 10px 28px rgba(10,34,43,0.28);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  background: var(--c-yellow);
+  color: #000;
+  font-family: var(--f-label);
   font-weight: 900;
-  line-height: 1;
+  font-size: clamp(0.9rem, 1.3vw, 1.15rem);
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-}
-.badge b { font-size: clamp(1.7rem, 2.9vw, 2.7rem); line-height: 0.95; letter-spacing: -0.01em; }
-.badge small {
-  font-size: clamp(0.62rem, 1.3vw, 0.85rem);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  margin-top: 4px;
-}
-
-/* ====================================================
-   DECORAÇÕES DO MODELO
-   ==================================================== */
-.deco { position: absolute; pointer-events: none; z-index: 0; }
-
-/* Círculo pontilhado no canto inferior esquerdo */
-.deco--halftone {
-  left: -50px; bottom: -50px;
-  width: 240px; height: 240px;
-  border-radius: 50%;
-  background-image: radial-gradient(circle, var(--c-brand) 30%, transparent 34%);
-  background-size: 11px 11px;
-}
-
-/* Listras diagonais embaixo, no centro */
-.deco--stripes {
-  left: 32%; bottom: 0;
-  width: 260px; height: 64px;
-  transform: translateX(-50%);
-  background: repeating-linear-gradient(-62deg, var(--c-brand) 0 5px, transparent 5px 20px);
-}
-
-/* Anel vazado no canto superior esquerdo */
-.deco--ring {
-  left: -90px; top: 14%;
-  width: 240px; height: 240px;
-  border-radius: 50%;
-  border: 22px solid rgba(10,34,43,0.08);
-}
-
-/* Pontinhos à esquerda, perto do título */
-.deco--grid-left {
-  left: calc(var(--gutter) * 0.75); top: 44%;
-  width: 64px; height: 130px;
-  background-image: radial-gradient(circle, rgba(10,34,43,0.3) 28%, transparent 32%);
-  background-size: 16px 16px;
-}
-
-/* Sinais de "+" espalhados */
-.deco--plus {
-  width: 22px; height: 22px;
-  background:
-    linear-gradient(var(--c-brand), var(--c-brand)) center / 100% 4px no-repeat,
-    linear-gradient(var(--c-brand), var(--c-brand)) center / 4px 100% no-repeat;
-}
-.deco--plus.p1 { left: 44%; top: 17%; opacity: 0.85; }
-.deco--plus.p2 { left: 6%;  top: 66%; opacity: 0.5; transform: scale(0.8); }
-.deco--plus.p4 { left: 50%; top: 66%; opacity: 0.4; transform: scale(0.7); }
-
-/* Linha em zigue-zague */
-.deco--zigzag {
-  left: 38%; top: 30%;
-  width: 90px; height: 18px;
-  color: var(--c-brand);
-  opacity: 0.55;
-}
-
-/* Texto vertical na lateral esquerda */
-.deco--vtext {
-  left: calc(var(--gutter) * 0.32);
-  top: 55%;
-  transform: translate(-50%, -50%) rotate(-90deg);
   white-space: nowrap;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.5em;
-  text-transform: uppercase;
-  color: rgba(10,34,43,0.28);
+  transform: rotate(-10deg);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
 }
 
-/* Triângulos empilhados à direita, em branco sobre a foto */
-.deco--tris {
-  right: calc(var(--gutter) * 0.4);
-  bottom: 50px;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+/* ---------- HALTERES (desenho vazado amarelo) ---------- */
+.halter {
+  position: absolute;
+  pointer-events: none;
+  color: var(--c-yellow);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linejoin: round;
 }
-.deco--tris i {
-  width: 0; height: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-bottom: 20px solid #FFFFFF;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
-}
+.halter--topo   { left: 3%;  top: 4%;    width: clamp(90px, 10vw, 150px); transform: rotate(-12deg); }
+.halter--foto   { right: 2%; bottom: 3%; width: clamp(70px, 7vw, 110px);  transform: rotate(14deg); }
+.halter--painel { left: 1%;  bottom: 3%; width: clamp(80px, 8vw, 120px);  transform: rotate(18deg); }
 
 /* ====================================================
    RODAPÉ
    ==================================================== */
 footer {
-  width: 100%;
-  border-top: 1px solid rgba(10,34,43,0.10);
-  padding: 20px 16px 28px;
+  background: var(--c-brand);
+  color: rgba(255,255,255,0.7);
+  padding: 18px 16px 22px;
   text-align: center;
   font-size: 0.75rem;
-  color: var(--c-muted);
 }
-footer p + p { margin-top: 4px; opacity: 0.7; }
-footer a:hover { text-decoration: underline; }
+footer a:hover { color: var(--c-yellow); }
 
 /* ====================================================
-   ANIMAÇÃO DE ENTRADA
+   ANIMAÇÃO DE ENTRADA (só CSS: não espera JavaScript)
    ==================================================== */
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
-}
-[data-reveal].visible { opacity: 1; transform: none; }
+.reveal { animation: entrar 0.6s var(--ease) backwards; }   /* "backwards": some ao terminar, sem mudar camadas */
+.reveal--2 { animation-delay: 0.12s; }
+@keyframes entrar { from { opacity: 0; transform: translateY(18px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
 /* ====================================================
-   RESPONSIVO
+   RESPONSIVO — tablet e celular (painéis empilhados)
    ==================================================== */
-@media (max-width: 860px) {
-  .hero {
-    grid-template-columns: minmax(0,1fr);
-    padding-top: 32px;
-    gap: 36px;
+@media (max-width: 960px) {
+  .page { grid-template-columns: 1fr; }
+
+  /* a borda ondulada passa para baixo do painel */
+  .panel { padding-bottom: 96px; }   /* espaço para o halter não cobrir o botão */
+  .panel::after {
+    top: auto; left: 0; right: 0;
+    bottom: calc(var(--wave) * -1);
+    width: auto; height: var(--wave);
+    background: radial-gradient(circle at 50% 0, var(--c-brand) calc(var(--wave) - 0.5px), transparent var(--wave));
+    background-size: calc(var(--wave) * 2) var(--wave);
   }
-  /* no celular a foto vira um banner no topo, com degradê de cima para baixo */
-  .hero { padding-top: 0; }
-  .visual {
-    position: relative;
-    order: -1;
-    width: auto;
-    height: 50vh;
-    min-height: 300px;
-    margin: 0 calc(-1 * var(--gutter));
-  }
-  .visual__photo { object-position: 50% 30%; }
-  .visual::after {
-    background: linear-gradient(180deg,
-      rgba(255,255,255,0) 55%,
-      rgba(255,255,255,0.7) 82%,
-      #FFFFFF 100%);
-  }
-  .badge { width: 118px; left: var(--gutter); bottom: 14%; }
-  .badge b { font-size: 1.75rem; }
-  .deco--stripes { width: 150px; height: 40px; left: 60%; }
-  .deco--halftone { width: 130px; height: 130px; left: -50px; bottom: -50px; }
-  .deco--vtext, .deco--grid-left, .deco--zigzag, .deco--plus.p1, .deco--plus.p2, .deco--plus.p4 { display: none; }
-  .deco--ring { width: 160px; height: 160px; border-width: 16px; left: -80px; top: 52%; }
+  .content { padding-top: 40px; }
+  .halter--painel { width: 72px; bottom: 10px; }
+
+  .side { padding: calc(var(--wave) + 28px) var(--pad) 0; }
+  .photo { padding-top: 28px; }
+  .photo__frame { width: min(86%, 440px); }
+  .tag { left: 4%; bottom: 8%; }
 }
 
-@media (max-width: 520px) {
-  .top__home { font-size: 0.82rem; padding: 0 8px 10px; }
-  .top__nav a { font-size: 0.8rem; }
-  .icons span { width: 44px; height: 44px; border-radius: 13px; }
-  .icons svg { width: 24px; height: 24px; }
-  .cta { width: 100%; min-height: 66px; padding: 18px 20px; font-size: 1.12rem; white-space: nowrap; }
-  .deco--tris { display: none; }
+@media (max-width: 600px) {
+  .desc { max-width: none; }
+  .cta { width: 100%; min-width: 0; min-height: 70px; padding: 20px 24px; }   /* celular: botão mais alto */
+  .halter--topo { width: 64px; left: auto; right: 4%; top: auto; bottom: 40%; }
+  .tag { font-size: 0.85rem; padding: 10px 20px; }
 }
 </style>
 </head>
 <body>
 
+<!-- desenho do halter, definido uma vez e reutilizado -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="halter" viewBox="0 0 100 100"><path d="M28 45 H72 V28 Q72 24 76 24 H80 Q84 24 84 28 V36 H90 Q94 36 94 40 V60 Q94 64 90 64 H84 V72 Q84 76 80 76 H76 Q72 76 72 72 V55 H28 V72 Q28 76 24 76 H20 Q16 76 16 72 V64 H10 Q6 64 6 60 V40 Q6 36 10 36 H16 V28 Q16 24 20 24 H24 Q28 24 28 28 Z M16 36 V64 M84 36 V64"/></symbol>
+</svg>
+
 <main class="page">
 
-  <!-- ===== TOPO ===== -->
-  <header class="top">
-    <span class="top__home">Flow Promos</span>
-    <nav class="top__nav" aria-label="Redes sociais">
+  <!-- ===== PAINEL ESQUERDO ===== -->
+  <section class="panel">
+    <nav class="nav" aria-label="Navegação">
+      <a href="#" aria-current="page">Início</a>
       <a href="https://www.instagram.com/flowcontentpromo/" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.tiktok.com/@flowcontentweb?lang=pt-BR" target="_blank" rel="noopener">TikTok</a>
     </nav>
-  </header>
 
-  <!-- ===== HERO ===== -->
-  <section class="hero">
-
-    <div class="hero__text" data-reveal>
-      <div class="icons" aria-hidden="true">
-        <!-- tênis -->
-        <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 15.5c0-.8.6-1.5 1.4-1.5H5l2.6-5.2c.3-.5.9-.7 1.4-.4l1.6.9-.9 1.8 1.6.8.8-1.6 1.4.8-.8 1.6 1.6.8.8-1.5c2.3 1.2 4.5 1.5 6.3 1.6.9 0 1.6.8 1.6 1.7V17c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1v-1.5z"/><rect x="2" y="18.6" width="20" height="1.6" rx=".8"/></svg></span>
-        <!-- haltere -->
-        <span><svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="9.5" width="2.2" height="5" rx="1"/><rect x="3.6" y="6.5" width="3" height="11" rx="1.2"/><rect x="6.6" y="11" width="10.8" height="2" rx=".6"/><rect x="17.4" y="6.5" width="3" height="11" rx="1.2"/><rect x="20.8" y="9.5" width="2.2" height="5" rx="1"/></svg></span>
-        <!-- camiseta -->
-        <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 3 3 5.6 1.5 10l3.4 1.3L6 9.4V21h12V9.4l1.1 1.9 3.4-1.3L21 5.6 15.5 3c-.5 1.4-1.9 2.4-3.5 2.4S9 4.4 8.5 3z"/></svg></span>
-        <!-- garrafa -->
-        <span><svg viewBox="0 0 24 24" fill="currentColor"><rect x="9" y="1.5" width="6" height="2.5" rx=".8"/><path d="M9.5 5h5v2.2c1.8.7 3 2.4 3 4.4V20a2.5 2.5 0 0 1-2.5 2.5H9A2.5 2.5 0 0 1 6.5 20v-8.4c0-2 1.2-3.7 3-4.4V5z"/></svg></span>
-      </div>
-
-      <h1>
-        <span class="title">Flow</span>
-        <span class="title-fit">
-          <svg viewBox="0 0 40 40" fill="currentColor" aria-hidden="true"><rect x="0" y="15" width="5" height="10" rx="2"/><rect x="7" y="4" width="7" height="32" rx="2"/><rect x="16" y="2" width="7" height="36" rx="2"/><rect x="23" y="17" width="17" height="6"/></svg>
-          FIT
-          <svg viewBox="0 0 40 40" fill="currentColor" aria-hidden="true"><rect x="0" y="17" width="17" height="6"/><rect x="17" y="2" width="7" height="36" rx="2"/><rect x="26" y="4" width="7" height="32" rx="2"/><rect x="35" y="15" width="5" height="10" rx="2"/></svg>
-        </span>
-      </h1>
-
-      <p class="desc">As melhores <strong>PROMOS fitness</strong> estão só aqui! Ofertas selecionadas todos os dias, direto no seu WhatsApp.</p>
-
+    <div class="content reveal">
+      <h1 class="title">Treine mais,<br>pague <em>menos!</em></h1>
+      <h2 class="subtitle">Promos Fitness</h2>
+      <p class="desc">As melhores ofertas de tênis, roupas, suplementos e acessórios, selecionadas todos os dias e enviadas direto no seu WhatsApp.</p>
       <a href="https://chat.whatsapp.com/Ed6RDxdu73kAo9kI3xvlFM" class="cta" target="_blank" rel="noopener" data-grupo="FLOW FIT" data-nicho="fitness">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9"/><path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1"/></svg>
         Entrar no grupo
       </a>
     </div>
 
-    <div class="visual" data-reveal aria-hidden="true">
-      <img src="corrida-parque.jpg" alt="Casal correndo no parque" class="visual__photo" width="1100" height="880" />
-    </div>
-
+    <svg class="halter halter--painel" viewBox="0 0 100 100" aria-hidden="true"><use href="#halter"/></svg>
   </section>
 
-  <!-- decorações do modelo (atrás do conteúdo) -->
-  <div class="deco deco--ring" aria-hidden="true"></div>
-  <div class="deco deco--grid-left" aria-hidden="true"></div>
-  <div class="deco deco--vtext" aria-hidden="true">Promos · Fitness · Cupons</div>
-  <svg class="deco deco--zigzag" viewBox="0 0 90 18" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" aria-hidden="true"><path d="M2 15 12 3l10 12 10-12 10 12 10-12 10 12 10-12 10 12"/></svg>
-  <i class="deco deco--plus p1" aria-hidden="true"></i>
-  <i class="deco deco--plus p2" aria-hidden="true"></i>
-  <i class="deco deco--plus p4" aria-hidden="true"></i>
-  <div class="deco deco--halftone" aria-hidden="true"></div>
-  <div class="deco deco--stripes" aria-hidden="true"></div>
-  <div class="deco deco--tris" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <!-- ===== PAINEL DIREITO ===== -->
+  <section class="side">
+    <svg class="halter halter--topo" viewBox="0 0 100 100" aria-hidden="true"><use href="#halter"/></svg>
+    <svg class="halter halter--foto" viewBox="0 0 100 100" aria-hidden="true"><use href="#halter"/></svg>
+
+    <div class="photo reveal reveal--2">
+      <div class="photo__frame">
+        <img src="corrida-parque.jpg" alt="Casal correndo no parque" width="1100" height="880" decoding="async">
+      </div>
+      <span class="tag">20% Off</span>
+    </div>
+  </section>
 
 </main>
 
-<script>
-// ---- REVEAL ----
-// Rede de segurança: [data-reveal] nasce invisível. Se o IntersectionObserver
-// faltar ou falhar, o temporizador revela tudo — o botão nunca pode sumir.
-function revelarTudo() {
-  document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('visible'));
-}
-try {
-  if (typeof IntersectionObserver !== 'function') throw new Error('sem IntersectionObserver');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 120);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
-  setTimeout(revelarTudo, 3000);
-} catch (e) {
-  revelarTudo();
-}
-</script>
+<footer>
+  <p>© 2026 Flow Content Promos · <a href="https://www.instagram.com/flowcontentpromo/" target="_blank" rel="noopener">@flowcontentpromo</a></p>
+</footer>
 
 <!-- ===== Meta Pixel + API de Conversões: evento Lead no botão do grupo ===== -->
 <script>
